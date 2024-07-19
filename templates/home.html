@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+<head>
+    <style>
+        .page{
+            overflow-y: scroll;
+        }
+        .page::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+<div class="page">
+    <h2>Welcome to Your App</h2>
+    <p>This is a simple app to manage overdue amounts.</p>
+    
+    <h3>Features:</h3>
+    <ul>
+        <li><strong>About:</strong> Add new users and their overdue amounts.</li>
+        <li><strong>Overdue:</strong> View and update existing user details.</li>
+        <li><strong>Reminder:</strong> Send reminder emails to users.</li>
+    </ul>
+    
+    <h3>About the App:</h3>
+    <p>This app helps you keep track of users and their overdue amounts. You can add new users, update their details, and send them reminder emails.</p>
+    
+    <h3>Get Started:</h3>
+    <p>Click on the navigation links above to explore the app.</p>
+    
+    <hr>
+    
+    <h3>Fun Stuff:</h3>
+    <p>Here's a fun quote about borrowing:</p>
+    <blockquote>
+        "Borrowing money from a friend is like playing with fire. You might think you have it under control, but sooner or later, you're going to get burned." - Anonymous
+    </blockquote>
+    
+    <h3>Guess Overdue Amount:</h3>
+    <p>Enter the name of the user whose overdue amount you want to guess:</p>
+    <input type="text" id="userName" placeholder="Enter user's name">
+    <button onclick="getOverdueAmount()">Submit</button>
+    <p id="guessResult"></p>
+    <form id="guessForm"></form>
+</div>
+
+<script>
+    function getOverdueAmount() {
+        const userName = document.getElementById('userName').value.trim();
+        if (userName === '') {
+            document.getElementById('guessResult').innerText = 'Please enter a user name.';
+            return;
+        }
+
+        fetch(`/get_overdue_amount/${userName}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const overdueAmount = data.overdueAmount;
+                    const userFullName = data.userFullName;
+                    document.getElementById('guessResult').innerText = `Hi ${userFullName}! Guess your overdue amount:`;
+                    document.getElementById('guessForm').innerHTML = `
+                        <input type="number" id="userGuess" placeholder="Enter your guess">
+                        <button onclick="checkGuess(event,${overdueAmount})">Submit</button>
+                    `;
+                } else {
+                    document.getElementById('guessResult').innerText = 'User not found.';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('guessResult').innerText = 'An error occurred. Please try again later.';
+            });
+    }
+
+    function checkGuess(event,overdueAmount) {
+        const userGuess = parseInt(document.getElementById('userGuess').value);
+        event.preventDefault();
+        if (isNaN(userGuess)) {
+            document.getElementById('guessResult').innerText = 'Please enter a valid number.';
+        } else if (userGuess === Math.abs(overdueAmount)) {
+            document.getElementById('guessResult').innerText = `Congratulations! You guessed the correct overdue amount!`;
+        } else if (userGuess < Math.abs(overdueAmount)) {
+            document.getElementById('guessResult').innerText = 'Too low! Try a higher number.';
+        } else {
+            document.getElementById('guessResult').innerText = 'Too high! Try a lower number.';
+        }
+    }
+</script>
+{% endblock %}

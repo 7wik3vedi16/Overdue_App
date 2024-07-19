@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}
+Analysis
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>Overdue Amount Analysis</h2>
+    <form action="{{ url_for('analysis') }}" method="post">
+        <div>
+            <label for="name">Select Name:</label>
+            <select id="name" name="name" required>
+                {% for name in unique_names %}
+                    <option value="{{ name }}" {% if selected_name == name %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit">Generate Analysis</button>
+    </form>
+
+    {% if graph_url %}
+        <div class="graph-container">
+            <img src="{{ graph_url }}" alt="Overdue Amount Analysis Graph" class="graph">
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='about.css')}}" />
+</head>
+
+{% block content %}
+<h2>Add New User</h2>
+    <p>Please provide the following information to add a new user:</p>
+<form action="" method="post">
+    <label for="name">Name :  <em>(required)</em></label> 
+    <input type="text" id="name" name="name" />  
+    <br>
+    <label for="emailid">Email Id :  <em>(required)</em></label>                     
+    <input type="text" id="emailid" name="emailid" required />                    
+    <br>
+    <label for="amount">Amount overdue :  <em>(required)</em></label>                     
+    <input type="number" id="amount" name="amount" required />
+    <br>               
+    <label for="amount">Description :  <em>(required)</em></label>                     
+    <input type="text" id="description" name="description" required />                    
+    <br>
+    <br>
+    <input class="button" type="submit">
+</form>
+<p>
+    {% for item in data %}
+        <li>&#8594; : {{ item }}</li>
+    {% endfor %}
+</p>
+{% endblock %}

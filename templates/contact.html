@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block title %}
+Contact Us
+{% endblock %}
+{% block content %}
+<h2>Reminder Page</h2>
+<form action="{{ url_for('contact') }}" method="post">
+    <div>
+        <label for="user_id">Select User:</label>
+        <select id="user_id" name="user_id" required>
+            {% for user in user_list %}
+                <option value="{{ user._id }}">{{ user.Name }} ({{ user.Email_Id }})</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="template_type">Template Type:</label>
+        <select id="template_type" name="template_type">
+            <option value="friendly">Friendly</option>
+            <option value="formal">Formal</option>
+            <option value="urgent">Urgent</option>
+        </select>
+    </div>
+    <div>
+        <label for="custom_message">Custom Message:</label>
+        <textarea id="custom_message" name="custom_message" rows="4" cols="50"></textarea>
+        <button type="button" id="start-record-btn">🎤 Record</button>
+    </div>
+    <button type="submit">Generate Reminder</button>
+</form>
+
+{% if result %}
+<h3>Reminder:</h3>
+<p>{{ result }}</p>
+{% endif %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startRecordBtn = document.getElementById('start-record-btn');
+        const customMessageTextarea = document.getElementById('custom_message');
+
+        let recognition;
+
+        // Check for browser compatibility
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+
+            // Configure the recognition object
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = function() {
+                startRecordBtn.innerText = '🎤 Recording...';
+                startRecordBtn.disabled = true;
+            };
+
+            recognition.onend = function() {
+                startRecordBtn.innerText = '🎤 Start Recording';
+                startRecordBtn.disabled = false;
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                customMessageTextarea.value += transcript;
+            };
+
+            // Start speech recognition when the button is clicked
+            startRecordBtn.addEventListener('click', function() {
+                recognition.start();
+            });
+        } else {
+            startRecordBtn.disabled = true;
+            alert('Speech recognition is not supported in this browser.');
+        }
+    });
+</script>
+{% endblock %}

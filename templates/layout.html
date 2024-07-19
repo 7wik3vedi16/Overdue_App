@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='site.css')}}" />
+        <style>
+            .profile-picture {
+                width: 40px;
+                height: 40px;
+                border-radius: 20%;
+                display: inline-block;
+                text-align: center;
+                line-height: 40px;
+                font-weight: bold;
+                color: #ffffff;
+                margin-right: 20px;
+            }
+        </style>
+    </head>
+
+
+    <body>
+        <div id="page">
+            <div class="navbar">
+                <div class="nav">
+                    <a href="{{ url_for('home') }}" class="navbar-brand">Home</a>
+                    <a href="{{ url_for('about') }}" class="navbar-item">About</a>
+                    <a href="{{ url_for('overdue') }}" class="navbar-item">Overdue</a>
+                    <a href="{{ url_for('contact') }}" class="navbar-item">Reminder</a>
+                    <a href="{{ url_for('payment') }}" class="navbar-item">Payment Obligations</a>
+                    <a href="{{ url_for('analysis') }}" class="navbar-item">Analysis</a>
+                    {%  if 'google_token' not in session %}
+                    <a href="{{ url_for('logout') }}" class="navbar-item">Logout</a>
+                    {% endif %}
+                    {% set initials = session['name'] | first | upper %}
+                </div>
+                <div class="profile">
+                    <div class="profile-picture" style="background-color: {{ ''|random_color }};">
+                        {{ initials }}
+                    </div>
+
+                </div>  
+            </div>
+
+            <div class="body-content">
+                {% block content %}
+                {% endblock %}
+                <hr/>
+                    <footer>
+                        <div id="footer_content">
+                            <p>&copy; 2024</p>
+                        </div>
+                    </footer>
+            </div>
+        </div>    
+    
+    </body>
+</html>

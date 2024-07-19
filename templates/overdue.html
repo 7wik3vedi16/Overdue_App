@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='overdue.css')}}" />
+</head>
+{% block title %}
+Overdue
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>Overdue Page</h2>
+    <p>This page displays overdue information for users.</p>
+    <ul class="list-group">
+        {% for item in inf %}
+            {% if item['User_ID'] == user_id %}
+                <li class="list-group-item">
+                    <div id="user_{{ item['_id'] }}_details">
+                        <strong>Name:</strong> {{ item.Name }}<br>
+                        <strong>Email:</strong> {{ item.Email_Id }}<br>
+                        <strong>Amount Overdue:</strong> 
+                        {% set overdueAmount = item.Amount_Overdue | int %}
+                        {% if overdueAmount < 0 %}
+                            <span class="green-arrow">&#x25B2;</span> {{ -overdueAmount }}
+                        {% elif overdueAmount > 0 %}
+                            <span class="red-arrow">&#x25BC;</span> {{ overdueAmount }}
+                        {% else %}
+                            {{ overdueAmount }}
+                        {% endif %}
+                        <br>
+                        <strong>Description:</strong>{{item.Description}} 
+                        <br>
+                        <button onclick="editUser('{{ item['_id'] }}')">Edit</button>
+                        <br>
+                        <form id="delete_form_{{ item['_id'] }}" action="{{ url_for('overdue') }}" method="post">
+                            <input type="hidden" name="_id" value="{{ item['_id'] }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        <br>
+                    </div>
+                    <div id="user_{{ item['_id'] }}_edit_form" style="display: none;">
+                        <form action="{{ url_for('edit_user', user_id=item['_id']) }}" method="post">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" value="{{ item.Name }}"><br>
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" value="{{ item.Email_Id }}"><br>
+                            <label for="amount">Amount Overdue:</label>
+                            <input type="number" id="amount" name="amount" value="{{ item.Amount_Overdue }}"><br>
+                            <label for="description">Description:</label>
+                            <input type="text" id="description" name="description" value="{{ item.Description }}"><br>
+                            <button type="button" onclick="cancelEdit('{{ item['_id'] }}')">Cancel</button>
+                            <button type="submit">Save</button>
+                            <br>
+                        </form>
+                    </div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    
+</div>
+
+<script>
+    function editUser(userId) {
+        document.getElementById(`user_${userId}_details`).style.display = 'none';
+        document.getElementById(`user_${userId}_edit_form`).style.display = 'block';
+    }
+
+    function cancelEdit(userId) {
+        document.getElementById(`user_${userId}_details`).style.display = 'block';
+        document.getElementById(`user_${userId}_edit_form`).style.display = 'none';
+    }
+</script>
+{% endblock %}
